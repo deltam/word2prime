@@ -99,16 +99,21 @@
    (dec (/ (dec (Math/pow 26 (inc n)))
            (dec 26)))))
 
+(def elapsed-time "処理全体に掛かった時間(msec)" (atom 0))
+
 (defn make-word-list-async
   "非同期に単語を素数化したリストを作りファイル出力する"
   [filename encode-words]
   (reset! elapsed-time 0)
   (let [start (System/currentTimeMillis)
-        ch (ac/chan)]
+        in-ch (ac/chan)
+        out-ch (ac/chan)
+        encode-xf (map #(do (swap! elapsed-time max (- (System/currentTimeMillis) start))
+                            (vector % (tf/p :encode (encode %)))))]
+    (ac/pipeline 1000 out-ch encode-xf in-ch)
     (ac/go-loop []
-      (when-let [[word prime] (ac/<! ch)]
-        (spit filename (str word " " prime "\n") :append true)
+      (when-let [[word prime] (ac/<! out-ch)]
+        (tf/p :write-file
+              (spit filename (str word " " prime "\n") :append true))
         (recur)))
-    (doseq [word encode-words]
-      (ac/go
-        (ac/>! ch [word (encode word)])))))
+    (ac/onto-chan in-ch encode-words)))
