@@ -19,12 +19,7 @@
 (defn prime?
   "素数か？"
   [n]
-  (loop [i 2]
-    (if (< n (* i i))
-      true
-      (if (= 0 (mod n i))
-        false
-        (recur (inc i))))))
+  (.isProbablePrime (biginteger n) 1000))
 
 (defn tail-bytes
   "末尾に追加するバイトの候補列を返す"
