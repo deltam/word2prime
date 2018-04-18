@@ -39,7 +39,7 @@
   "素数の候補シーケンスを返す"
   [data offset]
   (map #(+ (* data offset) %)
-       (filter #(coprime? % data)
+       (filter #(tf/p :coprime? (coprime? % data))
                (tail-bytes offset ))))
 
 (defn str->bigint
@@ -56,7 +56,7 @@
         find-seq (apply concat
                         (map #(find-prime-seq num %)
                              shift-seq))]
-    (first (filter #(tf/p :prime (prime? %)) find-seq))))
+    (first (filter #(tf/p :prime? (prime? %)) find-seq))))
 
 (defn decode
   "素数を文字列に直す"
@@ -109,11 +109,10 @@
         in-ch (ac/chan)
         out-ch (ac/chan)
         encode-xf (map #(do (swap! elapsed-time max (- (System/currentTimeMillis) start))
-                            (vector % (tf/p :encode (encode %)))))]
+                            (vector % (encode %))))]
     (ac/pipeline 1000 out-ch encode-xf in-ch)
     (ac/go-loop []
       (when-let [[word prime] (ac/<! out-ch)]
-        (tf/p :write-file
-              (spit filename (str word " " prime "\n") :append true))
+        (spit filename (str word " " prime "\n") :append true)
         (recur)))
     (ac/onto-chan in-ch encode-words)))
