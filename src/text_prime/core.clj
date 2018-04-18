@@ -48,16 +48,15 @@
   [word]
   (let [num (str->bigint word)
         shift-seq (iterate #(* % 256N) 256N)
-        find-seq (apply concat
-                        (map #(find-prime-seq num %)
-                             shift-seq))]
+        find-seq  (mapcat #(find-prime-seq num %)
+                          shift-seq)]
     (first (filter #(tf/p :prime? (prime? %)) find-seq))))
 
 (defn decode
   "素数を文字列に直す"
   [prime]
   (let [prime-bytes (.toByteArray (biginteger prime))]
-    (new String prime-bytes)))
+    (String. prime-bytes)))
 
 (def alphabet
   "a-zのキャラクタ"
@@ -69,13 +68,16 @@
   (map #(apply str %)
        (comb/selections alphabet n)))
 
+(def all-words
+  "アルファベットを使うすべての単語の無限シーケンス"
+  (let [nums (iterate inc 1)]
+    (mapcat n-letter-words nums)))
+
 (def five-word
   "アルファベット五文字以下の単語"
-  (apply concat
-         (map n-letter-words
-              (range 1 (inc 5)))))
+  (take-while #(<= (.length %) 5) all-words))
 
-(defn make-list-words
+(defn make-word-list
   "五文字以下の英単語の素数エンコードリストをファイル出力する"
   [filename encode-words]
   (doseq [word encode-words]
@@ -90,9 +92,8 @@
 (defn count-all-sel
   "１〜n個のアルファベットの組合せ数をかえす"
   [n]
-  (int
-   (dec (/ (dec (Math/pow 26 (inc n)))
-           (dec 26)))))
+  (dec (/ (dec (int (Math/pow 26 (inc n))))
+          (dec 26))))
 
 (def elapsed-time "処理全体に掛かった時間(msec)" (atom 0))
 
@@ -103,8 +104,9 @@
   (let [start (System/currentTimeMillis)
         in-ch (ac/chan)
         out-ch (ac/chan)
-        encode-xf (map #(do (swap! elapsed-time max (- (System/currentTimeMillis) start))
-                            (vector % (encode %))))]
+        encode-xf (map #(let [ret [% (encode %)]]
+                          (swap! elapsed-time max (- (System/currentTimeMillis) start))
+                          ret))]
     (ac/pipeline 1000 out-ch encode-xf in-ch)
     (ac/go-loop []
       (when-let [[word prime] (ac/<! out-ch)]
