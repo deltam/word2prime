@@ -4,24 +4,24 @@
   (:require [taoensso.tufte :as tf]))
 
 
-(defn gcd
+(defn- gcd
   "最大公約数を返す"
   [a b]
   (if (zero? b)
     a
     (recur b (mod a b))))
 
-(defn coprime?
-     "互いに素か？"
+(defn- coprime?
+  "互いに素か？"
   [a b]
   (= 1 (gcd a b)))
 
-(defn prime?
+(defn- prime?
   "素数か？"
   [n]
   (.isProbablePrime (biginteger n) 1000))
 
-(defn tail-bytes
+(defn- tail-bytes
   "末尾に追加するバイトの候補列を返す"
   [offset]
   (let [ascii-control-chars (cons 127 (range 32))]
@@ -30,7 +30,7 @@
       (for [a ascii-control-chars, b (tail-bytes (int (/ offset 256)))]
         (+ (* 256 b) a)))))
 
-(defn find-prime-seq
+(defn- find-prime-seq
   "素数の候補シーケンスを返す"
   [data offset]
   (map #(+ (* data offset) %)
