@@ -3,6 +3,7 @@
   :url "https://github.com/deltam/word2prime"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/mit-license.php"}
+  :main word2prime.core
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/math.combinatorics "0.1.4"]
                  [org.clojure/core.async "0.4.474"]

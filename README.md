@@ -4,6 +4,16 @@ Encode word to prime number by "Illegal Prime" format.
 
 ## Usage
 
+on shell
+
+```shell
+$ lein run -e "hello"
+114784820031263
+$ lein run -d 114784820031263 ; echo
+hello
+```
+
+
 on REPL
 
 ```clojure:repl

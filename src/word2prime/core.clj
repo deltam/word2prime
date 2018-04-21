@@ -113,3 +113,11 @@
         (spit filename (str word " " prime "\n") :append true)
         (recur)))
     (ac/onto-chan in-ch encode-words)))
+
+
+(defn -main [opt & args]
+  (let [result (cond
+                 (= opt "-e") (.toString (encode (first args)))
+                 (= opt "-d") (decode (bigint (first args)))
+                 :else (str "invalid option: " opt))]
+    (print result)))
