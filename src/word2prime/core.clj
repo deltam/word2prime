@@ -1,4 +1,4 @@
-(ns text-prime.core
+(ns word2prime.core
   (:require [clojure.math.combinatorics :as comb])
   (:require [clojure.core.async :as ac])
   (:require [taoensso.tufte :as tf]))
