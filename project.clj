@@ -1,5 +1,5 @@
 (defproject word2prime "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "Encode word to prime number by \"Illegal Prime\" format."
   :url "https://github.com/deltam/word2prime"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/mit-license.php"}
