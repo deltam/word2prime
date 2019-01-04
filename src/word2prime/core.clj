@@ -50,7 +50,9 @@
         shift-seq (iterate #(* % 256N) 256N)
         find-seq  (mapcat #(find-prime-seq num %)
                           shift-seq)]
-    (first (filter #(tf/p :prime? (prime? %)) find-seq))))
+    (if (prime? num)
+      num
+      (first (filter #(tf/p :prime? (prime? %)) find-seq)))))
 
 (defn decode
   "素数を文字列に直す"
