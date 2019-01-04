@@ -35,7 +35,7 @@
   [data offset]
   (map #(+ (* data offset) %)
        (filter #(tf/p :coprime? (coprime? % data))
-               (tail-bytes offset ))))
+               (tail-bytes offset))))
 
 (defn str->bigint
   "文字列を整数化する"
@@ -75,12 +75,18 @@
   (let [nums (iterate inc 1)]
     (mapcat n-letter-words nums)))
 
+(defn words
+  "アルファベットn文字以下の単語"
+  [n]
+  (take-while #(<= (.length %) n) all-words))
+
 (def five-word
   "アルファベット五文字以下の単語"
-  (take-while #(<= (.length %) 5) all-words))
+  (words 5))
+
 
 (defn make-word-list
-  "五文字以下の英単語の素数エンコードリストをファイル出力する"
+  "単語の素数エンコードリストをファイル出力する"
   [filename encode-words]
   (doseq [word encode-words]
     (let [prime (encode word)]
